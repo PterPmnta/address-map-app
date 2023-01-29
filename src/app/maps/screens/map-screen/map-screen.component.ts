@@ -10,6 +10,10 @@ export class MapScreenComponent implements OnInit {
 
   constructor(private placesService: PlacesService) { }
 
+  get isUserLocationReady(){
+    return this.placesService.isUserLocationReady;
+  }
+
   ngOnInit() {}
 
 }
