@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { PlacesService } from '../../services/index.service';
+import { PlacesService, MapService } from '../../services/index.service';
 import * as mapboxgl from 'mapbox-gl';
 
 @Component({
@@ -14,7 +14,8 @@ export class MapViewComponent implements OnInit, AfterViewInit {
   mapa!: mapboxgl.Map;
   mapStyle: string = 'mapbox://styles/mapbox/light-v10';
 
-  constructor(private placesService: PlacesService){}
+  constructor(private placesService: PlacesService,
+              private mapService: MapService){}
 
   ngOnInit(){
     console.log(this.placesService.userLocation);
@@ -47,6 +48,7 @@ export class MapViewComponent implements OnInit, AfterViewInit {
         .setPopup(popUp)
         .addTo(this.mapa)
 
+    this.mapService.setMap(this.mapa);
   }
 
 }
