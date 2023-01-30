@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MapService, PlacesService } from '../../services/index.service';
 
 @Component({
   selector: 'app-btn-mylocation',
@@ -7,6 +8,20 @@ import { Component } from '@angular/core';
 })
 export class BtnMylocationComponent {
 
-  goToMyLocation(){}
+  constructor(private mapService: MapService,
+              private placesService: PlacesService){}
+
+  goToMyLocation(){
+
+    if(!this.placesService.isUserLocationReady){
+      throw Error('No hay geocalizacion del usuario');
+    }
+
+    if(!this.mapService.isMapReady){
+      throw Error('El mapa no esta inicializado');
+    }
+
+    this.mapService.flyTo(this.placesService.userLocation!)
+  }
 
 }
