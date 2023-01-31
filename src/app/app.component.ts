@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from "mapbox-gl";
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,6 @@ export class AppComponent implements OnInit {
   title = 'address-map-app';
 
   ngOnInit(): void {
-    (mapboxgl as any).accessToken = 'pk.eyJ1IjoicHRlcnBtbnRhbSIsImEiOiJjbDU1enVzY2Qwb2FuM2txZnh4dTBrcWJ1In0.W2ustO6xfGcz-kjaLp4Udw'
+    (mapboxgl as any).accessToken = environment.mapboxToken
   }
 }
