@@ -37,6 +37,11 @@ export class PlacesService {
 
   getPlacesByQuery(query:string = ''){
 
+    if(query.length === 0){
+      this.places = [];
+      return;
+    }
+
     if(!this.userLocation){
       throw Error('No se pudo obtener la geocalizacion');
     }
