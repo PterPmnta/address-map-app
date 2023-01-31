@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Feature, IPlacesResponse } from '../interfaces/places.interface';
+import { PlacesApiClient } from '../api/placesApiClient';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class PlacesService {
     return !!this.userLocation;
   }
 
-  constructor(private http: HttpClient) {
+  constructor(private placesApi: PlacesApiClient) {
     this.getUserLocation();
   }
 
@@ -37,9 +37,17 @@ export class PlacesService {
 
   getPlacesByQuery(query:string = ''){
 
+    if(!this.userLocation){
+      throw Error('No se pudo obtener la geocalizacion');
+    }
+
     this.isLoadingPlaces = true;
 
-    this.http.get<IPlacesResponse>(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?limit=4&proximity=-73.990593, 40.740121&language=es&access_token=pk.eyJ1IjoicHRlcnBtbnRhbSIsImEiOiJjbDU1enVzY2Qwb2FuM2txZnh4dTBrcWJ1In0.W2ustO6xfGcz-kjaLp4Udw`)
+    this.placesApi.get<IPlacesResponse>(`/${query}.json`, {
+      params: {
+        proximity: this.userLocation.join(',')
+      }
+    })
       .subscribe((resp)=>{
         console.log(resp.features);
         this.isLoadingPlaces = false;
