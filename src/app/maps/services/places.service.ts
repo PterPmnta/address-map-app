@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Feature, IPlacesResponse } from '../interfaces/places.interface';
-import { PlacesApiClient } from '../api/placesApiClient';
+import { PlacesApiClient } from '../api/index';
 import { MapService } from './index.service';
 
 @Injectable({
