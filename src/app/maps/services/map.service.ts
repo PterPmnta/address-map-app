@@ -31,7 +31,7 @@ export class MapService {
     })
   }
 
-  createMarkerFromPlaces(places: Feature[]){
+  createMarkerFromPlaces(places: Feature[], userLocation: [number, number]){
 
     if(!this.map){
       throw Error('Map is not ready');
@@ -59,6 +59,18 @@ export class MapService {
     }
 
     this.markers = newMarkers;
+
+    if(places.length === 0){
+      return;
+    }
+
+    const bounds = new mapboxgl.LngLatBounds();
+    newMarkers.forEach(marker => bounds.extend(marker.getLngLat()));
+    bounds.extend(userLocation);
+
+    this.map.fitBounds(bounds, {
+      padding: 200
+    });
 
   }
 
