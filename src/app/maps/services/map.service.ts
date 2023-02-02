@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { Feature } from '../interfaces/places.interface';
+import { DirectionsApiClient } from '../api';
+import { IDirectionsResponse, Route } from '../interfaces/directions.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class MapService {
     return !!this.map;
   }
 
-  constructor() { }
+  constructor(private directionsApi: DirectionsApiClient) { }
 
   setMap(map: mapboxgl.Map){
     this.map = map;
@@ -72,6 +74,70 @@ export class MapService {
       padding: 200
     });
 
+  }
+
+  getRouteBetweenPoints(start: [number, number], end: [number, number]){
+    this.directionsApi.get<IDirectionsResponse>(`/${start.join(',')};${end.join(',')}`)
+      .subscribe(resp => {
+        this.drawLinestring(resp.routes[0])
+      })
+  }
+
+  private drawLinestring(route: Route){
+    console.log({kms: route.distance / 1000, duration: route.duration / 60})
+
+    if(!this.map){
+      throw Error('El mapa no inicializado.')
+    }
+
+    const coords = route.geometry.coordinates;
+    const bounds = new mapboxgl.LngLatBounds();
+
+    coords.forEach(([lng, lat]) => {
+      bounds.extend([lng, lat])
+    });
+
+    this.map?.fitBounds(bounds, {
+      padding: 200
+    });
+
+    const sourceData: mapboxgl.AnySourceData = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: coords
+            }
+          }
+        ]
+      }
+    }
+
+    if(this.map.getLayer('RouteString')){
+      this.map.removeLayer('RouteString');
+      this.map.removeSource('RouteString');
+    }
+
+    this.map?.addSource('RouteString', sourceData);
+
+    this.map.addLayer({
+      id: 'RouteString',
+      type: 'line',
+      source: 'RouteString',
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      },
+      paint: {
+        'line-color': 'black',
+        "line-width": 2,
+      }
+    })
   }
 
 }
