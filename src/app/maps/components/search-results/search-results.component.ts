@@ -34,6 +34,8 @@ export class SearchResultsComponent {
       throw Error('No hay una posicion inicial');
     }
 
+    this.placesServices.deletePlaces();
+
     const start = this.placesServices.userLocation!;
     const end = place.center as [number, number];
     this.mapService.getRouteBetweenPoints(start, end);
